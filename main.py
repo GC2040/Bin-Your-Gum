@@ -13,6 +13,11 @@ BG = pygame.image.load(os.path.join("assets","game","bg","bg.png"))
 cursor_img = pygame.image.load(os.path.join("assets","gum_cursor.png"))
 cursor_img_rect = cursor_img.get_rect()
 
+if getattr(sys, 'frozen', False): # Running as compiled
+            running_dir = sys._MEIPASS
+else:
+            running_dir = ""
+
 def get_font(size):
     return pygame.font.Font(os.path.join("assets","fonts","Belanosima","Belanosima-Regular.ttf"), size)
 
@@ -72,7 +77,8 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    game.main()
+                    play = game.Game(running_dir)
+                    play.main()
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     options()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):

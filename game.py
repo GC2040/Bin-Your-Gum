@@ -1,21 +1,10 @@
 import pygame
-import os
+import os, sys
 import random
 import hollow
 WIDTH = 800
 HEIGHT = 600
 BACKGROUND = (255, 0, 0)
-#paths
-
-gum_img = os.path.join("assets","game","sprites","gum.png")
-bin_img = os.path.join("assets","game","sprites","bin-to-scale.png")
-bg = pygame.image.load(os.path.join("assets","game","bg","bg.png"))
-icon = pygame.image.load(os.path.join("assets","game","sprites","bin.png"))
-
-
-
-
-
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, image, startx, starty):
@@ -35,8 +24,10 @@ class Sprite(pygame.sprite.Sprite):
 
 
 class Player(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__(bin_img, startx, starty)
+    def __init__(self, startx, starty,running_dir):
+        self.bin_img = os.path.join(running_dir,"assets","game","sprites","bin-to-scale.png")
+        super().__init__(self.bin_img, startx, starty)
+        
         self.speed = 4
         
         #mask
@@ -59,8 +50,10 @@ class Player(Sprite):
         self.rect.move_ip([x,y])
 
 class Gum(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__(gum_img, startx, starty)
+    def __init__(self, startx, starty,running_dir):
+        self.gum_img = os.path.join(running_dir,"assets","game","sprites","gum.png")
+        super().__init__(self.gum_img, startx, starty)
+        
         self.speed = 6
         
         self.score = 0
@@ -85,63 +78,66 @@ class Gum(Sprite):
             
     def move(self,x,y):
         self.rect.move_ip([x,y])
-
-def main():
-    pygame.init()
-    pygame.font.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    clock = pygame.time.Clock()
-
-    score = 0
-
-
-    player = Player(800/2-150/2,600-128)
-    player_group = pygame.sprite.Group()
-    gum = Gum(800/2-100/2,-57)
-    gum_group = pygame.sprite.Group()
-    gum_group.add(gum)
-    player_group.add(gum)
-
-
-    font = pygame.font.Font(None,36)
-    
-
-    pygame.display.set_caption("Bin Your Gum")
-    pygame.display.set_icon(icon)
-    pygame.mouse.set_visible(False)
-    
-    while True:
-        pygame.event.pump()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-        
-        if pygame.sprite.spritecollide(player,gum_group,False,pygame.sprite.collide_mask):
-        #if self.rect.colliderect(self.player.rect):
-        #if self.mask.overlap(self.player.mask,(self.rect.x -self.player.rect.x,self.rect.y-self.player.rect.y)):
-            score += 1
-            print(f"score: {score}")
-            print("collided")
-            gum.respawn()
-        elif gum.rect.y > 600:
-            gum.respawn()
+class Game():
+    def __init__(self, running_dir) -> None:
+        pygame.init()
+        pygame.font.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.clock = pygame.time.Clock()
+        self.score = 0
+        self.running_dir = running_dir
         
         
-        player.update()
-        gum.update()
-
-        screen.blit(bg,(0,0))
-        player.draw(screen)
-        gum.draw(screen)
-        score_text = hollow.textOutline(font,f"Score: {score}",(255, 234, 0),(255,255,255))
-        screen.blit(score_text,(10,10))
-
-
+    def main(self):
         
-        pygame.display.flip()
+        
+        self.bg = pygame.image.load(os.path.join(self.running_dir,"assets","game","bg","bg.png"))
+        self.icon = pygame.image.load(os.path.join(self.running_dir,"assets","game","sprites","bin.png"))
+        self.player = Player(800/2-150/2,600-128,self.running_dir)
+        self.player_group = pygame.sprite.Group()
+        self.gum = Gum(800/2-100/2,-57,self.running_dir)
+        self.gum_group = pygame.sprite.Group()
+        self.gum_group.add(self.gum)
+        self.player_group.add(self.gum)
 
-        clock.tick(60)
 
-if __name__ == "__main__":
-    main()
+        font = pygame.font.Font(None,36)
+        
+
+        pygame.display.set_caption("Bin Your Gum")
+        pygame.display.set_icon(self.icon)
+        pygame.mouse.set_visible(False)
+        
+        while True:
+            pygame.event.pump()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
+            if pygame.sprite.spritecollide(self.player,self.gum_group,False,pygame.sprite.collide_mask):
+            #if self.rect.colliderect(self.player.rect):
+            #if self.mask.overlap(self.player.mask,(self.rect.x -self.player.rect.x,self.rect.y-self.player.rect.y)):
+                self.score += 1
+                print(f"score: {self.score}")
+                print("collided")
+                self.gum.respawn()
+            elif self.gum.rect.y > 600:
+                self.gum.respawn()
+            
+            
+            self.player.update()
+            self.gum.update()
+
+            self.screen.blit(self.bg,(0,0))
+            self.player.draw(self.screen)
+            self.gum.draw(self.screen)
+            score_text = hollow.textOutline(font,f"Score: {self.score}",(255, 234, 0),(255,255,255))
+            self.screen.blit(score_text,(10,10))
+
+
+            
+            pygame.display.flip()
+
+            self.clock.tick(60)
