@@ -4,22 +4,24 @@ from button import Button
 
 
 pygame.init()
+try:
+            running_dir = sys._MEIPASS
+except Exception:
+            running_dir = os.path.abspath(".")
 
 SCREEN = pygame.display.set_mode((game.WIDTH, game.HEIGHT))
 pygame.display.set_caption("Bin Your Gum - Menu")
+pygame.display.set_icon(pygame.image.load(os.path.join(running_dir,"assets","game","sprites","bin.png")))
 
-BG = pygame.image.load(os.path.join("assets","game","bg","bg.png"))
+BG = pygame.image.load(os.path.join(running_dir,"assets","game","bg","bg.png"))
 
-cursor_img = pygame.image.load(os.path.join("assets","gum_cursor.png"))
+cursor_img = pygame.image.load(os.path.join(running_dir,"assets","gum_cursor.png"))
 cursor_img_rect = cursor_img.get_rect()
 
-if getattr(sys, 'frozen', False): # Running as compiled
-            running_dir = sys._MEIPASS
-else:
-            running_dir = ""
+
 
 def get_font(size):
-    return pygame.font.Font(os.path.join("assets","fonts","Belanosima","Belanosima-Regular.ttf"), size)
+    return pygame.font.Font(os.path.join(running_dir,"assets","fonts","Belanosima","Belanosima-Regular.ttf"), size)
 
 def options():
     while True:
@@ -57,11 +59,11 @@ def main_menu():
         MENU_TEXT = get_font(100).render("Bin Your Gum", True, "#0096FF")
         MENU_RECT = MENU_TEXT.get_rect(center=(500, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load(os.path.join("assets","menus","button.png")), pos=(100, 100), 
+        PLAY_BUTTON = Button(image=pygame.image.load(os.path.join(running_dir,"assets","menus","button.png")), pos=(100, 100), 
                             text_input="PLAY", font=get_font(45), base_color="#000000", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load(os.path.join("assets","menus","button.png")), pos=(100, 175), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load(os.path.join(running_dir,"assets","menus","button.png")), pos=(100, 175), 
                             text_input="OPTIONS", font=get_font(45), base_color="#000000", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load(os.path.join("assets","menus","button.png")), pos=(100, 250), 
+        QUIT_BUTTON = Button(image=pygame.image.load(os.path.join(running_dir,"assets","menus","button.png")), pos=(100, 250), 
                             text_input="QUIT", font=get_font(45), base_color="#000000", hovering_color="White")
         
 
